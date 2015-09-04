@@ -22,8 +22,8 @@ import me.cullycross.arbuz.events.LocationsListUpdateEvent;
  * Date: 9/4/15
  * For my shining stars!
  */
-public class LocationHelper implements
-        GoogleApiClient.ConnectionCallbacks,
+public class LocationHelper
+        implements GoogleApiClient.ConnectionCallbacks,
         LocationListener {
 
     private static final int SCAN_PERIOD = 60 * 1000;
@@ -97,7 +97,7 @@ public class LocationHelper implements
     @Override
     public void onLocationChanged(Location location) {
 
-        if(mSavedLocations.size() == SAVED_LOCATIONS_COUNT) {
+        if (mSavedLocations.size() == SAVED_LOCATIONS_COUNT) {
             mSavedLocations.remove(SAVED_LOCATIONS_COUNT - 1);
         }
         mSavedLocations.add(location);

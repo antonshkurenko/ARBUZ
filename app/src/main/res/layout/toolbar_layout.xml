@@ -5,17 +5,17 @@
     android:theme="@style/Arbuz.Toolbar">
 
     <!-- todo(CullyCross): maybe add compound drawable? -->
-    <TextView
+    <Button
         android:id="@+id/action_map"
         style="@style/ToolbarMenuItem"
         android:text="@string/toolbar_menu_map"/>
 
-    <TextView
+    <Button
         android:id="@+id/action_red_button"
         style="@style/ToolbarMenuItem"
         android:text="@string/toolbar_menu_red_button"/>
 
-    <TextView
+    <Button
         android:id="@+id/action_settings"
         style="@style/ToolbarMenuItem"
         android:text="@string/toolbar_menu_settings"/>

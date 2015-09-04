@@ -11,9 +11,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import de.greenrobot.event.EventBus;
 import me.cullycross.arbuz.R;
 import me.cullycross.arbuz.events.LocationFoundEvent;
+import me.cullycross.arbuz.fragments.ArbuzMapFragment;
 import me.cullycross.arbuz.utils.LocationHelper;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends AppCompatActivity
+        implements OnMapReadyCallback,
+        ArbuzMapFragment.OnMapInteractionListener {
 
     private GoogleMap mMap;
 
