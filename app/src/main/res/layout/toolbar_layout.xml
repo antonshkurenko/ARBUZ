@@ -6,9 +6,9 @@
 
     <!-- todo(CullyCross): maybe add compound drawable? -->
     <Button
-        android:id="@+id/action_map"
+        android:id="@+id/action_safe_way"
         style="@style/ToolbarMenuItem"
-        android:text="@string/toolbar_menu_map"/>
+        android:text="@string/toolbar_menu_safe_way"/>
 
     <Button
         android:id="@+id/action_red_button"

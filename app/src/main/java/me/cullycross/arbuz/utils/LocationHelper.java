@@ -1,8 +1,12 @@
 package me.cullycross.arbuz.utils;
 
 import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -10,8 +14,10 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import de.greenrobot.event.EventBus;
 import me.cullycross.arbuz.events.LocationFoundEvent;
@@ -29,8 +35,11 @@ public class LocationHelper
     private static final int SCAN_PERIOD = 60 * 1000;
     private static final int SAVED_LOCATIONS_COUNT = 10;
 
+    private static final int MAX_ELEMENTS = 3;
+
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+    private Geocoder mGeocoder;
 
     private Context mContext;
 
@@ -49,6 +58,7 @@ public class LocationHelper
 
     public void init(Context ctx) {
         mContext = ctx.getApplicationContext();
+        mGeocoder = new Geocoder(mContext, Locale.getDefault());
 
         buildGoogleApiClient();
         createLocationRequest();
@@ -65,6 +75,8 @@ public class LocationHelper
 
     /**
      * start monitor for location updates
+     *
+     * {@link #onLocationChanged(Location)}
      */
     public void startLocationUpdates() {
         LocationServices.FusedLocationApi.requestLocationUpdates(
@@ -121,5 +133,10 @@ public class LocationHelper
                 .addConnectionCallbacks(this)
                 .addApi(LocationServices.API)
                 .build();
+    }
+
+    @Nullable
+    public List<Address> fetchAddresses(String address) throws IOException {
+        return mGeocoder.getFromLocationName(address, MAX_ELEMENTS);
     }
 }

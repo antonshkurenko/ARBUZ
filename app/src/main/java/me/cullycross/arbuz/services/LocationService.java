@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import me.cullycross.arbuz.utils.LocationHelper;
+
 /**
  * Created by: cullycross
  * Date: 9/4/15
@@ -23,6 +25,7 @@ public class LocationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        LocationHelper.getInstance().startLocationUpdates();
 
         return super.onStartCommand(intent, flags, startId);
     }

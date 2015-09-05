@@ -6,12 +6,23 @@
     <string name="title_activity_map">Map</string>
 
     <!-- Toolbar strings -->
-    <string name="toolbar_menu_map">Map</string>
+    <string name="toolbar_menu_safe_way">Safe way</string>
     <string name="toolbar_menu_red_button">Red button</string>
     <string name="toolbar_menu_settings">Settings</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Map controls -->
+    <string name="map_controls_heatmap">Heatmap</string>
 
+    <!-- Direction values -->
+
+    <string name="directions_fragment_from_hint">From</string>
+    <string name="directions_fragment_to_hint">To</string>
+
+    <string-array name="direction_route_types">
+        <item>Driving</item>
+        <item>Walking</item>
+        <item>Bicycling</item>
+        <item>Transit</item>
+    </string-array>
 
 </resources>

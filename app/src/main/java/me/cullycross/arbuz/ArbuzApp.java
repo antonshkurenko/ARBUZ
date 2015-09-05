@@ -16,6 +16,5 @@ public class ArbuzApp extends Application {
         super.onCreate();
 
         LocationHelper.getInstance().init(this);
-
     }
 }
