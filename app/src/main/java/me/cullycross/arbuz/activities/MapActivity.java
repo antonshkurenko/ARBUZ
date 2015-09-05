@@ -1,6 +1,8 @@
 package me.cullycross.arbuz.activities;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.ToggleButton;
@@ -9,6 +11,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -57,9 +64,23 @@ public class MapActivity extends AppCompatActivity
         mMap.setMyLocationEnabled(true);
     }
 
+    // todo(CullyCross): later find safe way
     @Override
-    public void onWayFound() {
-        // todo(CullyCross): currently ignored
+    public void onWayFound(List<List<LatLng>> safeWay) {
+        for (List<LatLng> list : safeWay) {
+
+            final PolylineOptions options = new PolylineOptions().width(5).color(Color.BLACK).geodesic(true);
+            for (LatLng point : list) {
+                options.add(point);
+            }
+
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    mMap.addPolyline(options);
+                }
+            });
+        }
     }
 
     @OnClick(R.id.action_safe_way)

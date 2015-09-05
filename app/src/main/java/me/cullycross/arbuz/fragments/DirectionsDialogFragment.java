@@ -3,18 +3,27 @@ package me.cullycross.arbuz.fragments;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.location.Address;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +33,7 @@ import butterknife.ButterKnife;
 import me.cullycross.arbuz.R;
 import me.cullycross.arbuz.adapters.AutoCompleteAdapter;
 import me.cullycross.arbuz.utils.DelayAutoCompleteTextView;
+import me.cullycross.arbuz.utils.LocationHelper;
 
 /**
  * Created by: cullycross
@@ -32,6 +42,7 @@ import me.cullycross.arbuz.utils.DelayAutoCompleteTextView;
  */
 public class DirectionsDialogFragment extends DialogFragment
         implements DialogInterface.OnClickListener,
+        AdapterView.OnItemSelectedListener,
         ZeroLengthTextListener {
 
     @Bind(R.id.delay_autocomplete_from)
@@ -49,6 +60,10 @@ public class DirectionsDialogFragment extends DialogFragment
 
     private static final int SEARCH_THRESHOLD = 2;
 
+    private Address mFromPoint;
+    private Address mToPoint;
+    private String mMode = "driving";
+
     public static DirectionsDialogFragment newInstance() {
         DirectionsDialogFragment fragment = new DirectionsDialogFragment();
 
@@ -57,6 +72,7 @@ public class DirectionsDialogFragment extends DialogFragment
         return fragment;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -90,7 +106,7 @@ public class DirectionsDialogFragment extends DialogFragment
         switch (which) {
 
             case DialogInterface.BUTTON_POSITIVE:
-                //todo(CullyCross): find the safe way
+                sendDirectionRequest();
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
                 DirectionsDialogFragment.this.getDialog().cancel();
@@ -122,13 +138,55 @@ public class DirectionsDialogFragment extends DialogFragment
     private void initViews() {
 
         mDelayAutoCompleteFrom.setThreshold(SEARCH_THRESHOLD);
-        mDelayAutoCompleteTo.setThreshold(SEARCH_THRESHOLD);
-
         mDelayAutoCompleteFrom.setAdapter(new AutoCompleteAdapter(getActivity()));
         mDelayAutoCompleteFrom.setLoadingIndicator(mProgressBarFrom);
+        mDelayAutoCompleteFrom.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                mFromPoint = ((AutoCompleteAdapter) mDelayAutoCompleteFrom.getAdapter()).getItem(i);
+            }
+        });
 
+        mDelayAutoCompleteFrom.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        actionId == EditorInfo.IME_ACTION_DONE ||
+                        keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
+                                keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+
+                    mFromPoint = ((AutoCompleteAdapter) mDelayAutoCompleteFrom.getAdapter()).getItem(0);
+                    return true; // consume.
+                }
+                return false; // pass on to other listeners.
+            }
+        });
+
+        mDelayAutoCompleteTo.setThreshold(SEARCH_THRESHOLD);
         mDelayAutoCompleteTo.setAdapter(new AutoCompleteAdapter(getActivity()));
         mDelayAutoCompleteTo.setLoadingIndicator(mProgressBarTo);
+
+        mDelayAutoCompleteTo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                mToPoint = ((AutoCompleteAdapter) mDelayAutoCompleteTo.getAdapter()).getItem(i);
+            }
+        });
+
+        mDelayAutoCompleteTo.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                        actionId == EditorInfo.IME_ACTION_DONE ||
+                        keyEvent.getAction() == KeyEvent.ACTION_DOWN &&
+                                keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+
+                    mToPoint = ((AutoCompleteAdapter) mDelayAutoCompleteTo.getAdapter()).getItem(0);
+                    return true; // consume.
+                }
+                return false; // pass on to other listeners.
+            }
+        });
 
         MoreThanOneTextWatcher watcher = new MoreThanOneTextWatcher();
         watcher.add(mDelayAutoCompleteFrom)
@@ -151,6 +209,35 @@ public class DirectionsDialogFragment extends DialogFragment
         ((AlertDialog) getDialog())
                 .getButton(DialogInterface.BUTTON_POSITIVE)
                 .setEnabled(flag);
+    }
+
+    private void sendDirectionRequest() {
+        final LatLng from = new LatLng(mFromPoint.getLatitude(), mFromPoint.getLongitude());
+        final LatLng to = new LatLng(mToPoint.getLatitude(), mToPoint.getLongitude());
+
+        LocationHelper.getInstance().getDirections(from, to, mMode, new LocationHelper.OnRoutesFoundListener() {
+            @Override
+            public void onRouteFound(List<List<LatLng>> routes) {
+                if (mListener != null) {
+                    mListener.onWayFound(routes);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        mMode = mSpinnerRouteTypes.getAdapter().getItem(i).toString().toLowerCase();
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+        // ignored
+    }
+
+    public interface OnFragmentInteractionListener {
+        //void onWayFound(List<LatLng> safeWay);
+        void onWayFound(List<List<LatLng>> safeWay);
     }
 
     public static class MoreThanOneTextWatcher implements TextWatcher {
@@ -189,18 +276,14 @@ public class DirectionsDialogFragment extends DialogFragment
         @Override
         public void afterTextChanged(Editable editable) {
             boolean flag = true;
-            for(EditText editText : mEditTexts) {
-                if(editText.getText().length() == 0) {
+            for (EditText editText : mEditTexts) {
+                if (editText.getText().length() == 0) {
                     flag = false;
                     break;
                 }
             }
             mListener.onTextChanged(flag);
         }
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onWayFound();
     }
 }
 
