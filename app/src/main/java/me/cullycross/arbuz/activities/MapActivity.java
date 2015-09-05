@@ -1,11 +1,16 @@
 package me.cullycross.arbuz.activities;
 
 import android.graphics.Color;
+import android.content.Intent;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.ToggleButton;
+import android.widget.Button;
+import android.widget.ToggleButton;
+import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,6 +25,10 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 import me.cullycross.arbuz.R;
 import me.cullycross.arbuz.events.LocationFoundEvent;
@@ -29,8 +38,7 @@ import me.cullycross.arbuz.utils.LocationHelper;
 
 public class MapActivity extends AppCompatActivity
         implements OnMapReadyCallback,
-        ArbuzMapFragment.OnMapInteractionListener,
-        DirectionsDialogFragment.OnFragmentInteractionListener {
+        ArbuzMapFragment.OnMapInteractionListener {
 
     private static final String FRAGMENT_DIALOG_DIRECTIONS = "fragment_dialog_directions";
     @Bind(R.id.toggle_button_heatmap)
@@ -41,14 +49,15 @@ public class MapActivity extends AppCompatActivity
     Button mActionRedButton;
     @Bind(R.id.action_settings)
     Button mActionSettings;
-
+    
     private GoogleMap mMap;
 
     private LocationHelper mLocationHelper;
 
+    
+
     /**
      * Method for handling events, sent by EventBus
-     *
      * @param event location
      */
     public void onEvent(LocationFoundEvent event) {
@@ -62,6 +71,12 @@ public class MapActivity extends AppCompatActivity
         mMap = googleMap;
 
         mMap.setMyLocationEnabled(true);
+    }
+
+    @OnClick(R.id.action_settings)
+    public void openSettings() {
+        Intent openSettingsIntent = new Intent(this, SettingsActivity.class);
+        startActivity(openSettingsIntent);
     }
 
     // todo(CullyCross): later find safe way
