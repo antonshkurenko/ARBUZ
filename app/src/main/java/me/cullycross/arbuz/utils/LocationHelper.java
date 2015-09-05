@@ -48,7 +48,7 @@ public class LocationHelper
     private static final int SAVED_LOCATIONS_COUNT = 10;
 
     private static final int MAX_ELEMENTS = 3;
-    private static final String TAG = LocationHelper.class.getCanonicalName();
+    private static final String TAG = LocationHelper.class.getName();
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;

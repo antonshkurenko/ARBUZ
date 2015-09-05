@@ -53,5 +53,4 @@ public class ArbuzMapFragment extends SupportMapFragment {
     public interface OnMapInteractionListener {
 
     }
-
 }

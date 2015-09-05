@@ -106,6 +106,8 @@ public class DirectionsDialogFragment extends DialogFragment
         switch (which) {
 
             case DialogInterface.BUTTON_POSITIVE:
+
+                //fixme(CullyCross): fix nullpointerexception with null mToPoint and mFromPoint
                 sendDirectionRequest();
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
