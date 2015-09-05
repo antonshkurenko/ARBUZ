@@ -6,6 +6,7 @@ android {
     lintOptions {
         abortOnError false
     }
+
     defaultConfig {
         applicationId "me.cullycross.arbuz"
         minSdkVersion 14
