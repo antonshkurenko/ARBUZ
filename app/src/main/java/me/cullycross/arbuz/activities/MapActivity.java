@@ -34,7 +34,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 
 import butterknife.Bind;
@@ -43,9 +45,11 @@ import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import me.cullycross.arbuz.R;
 import me.cullycross.arbuz.content.CrimeLocation;
+import me.cullycross.arbuz.events.FetchedDataEvent;
 import me.cullycross.arbuz.events.LocationFoundEvent;
 import me.cullycross.arbuz.fragments.ArbuzMapFragment;
 import me.cullycross.arbuz.fragments.DirectionsDialogFragment;
+import me.cullycross.arbuz.services.FetchLocationsIntentService;
 import me.cullycross.arbuz.utils.FetchingClusterManager;
 import me.cullycross.arbuz.utils.LocationHelper;
 import me.cullycross.arbuz.utils.ParseHelper;
@@ -76,7 +80,7 @@ public class MapActivity extends AppCompatActivity
     private FetchingClusterManager mClusterManager;
 
     /**
-     * Method for handling events, sent by EventBus
+     * Method for handling found location
      *
      * @param event location
      */
@@ -86,51 +90,28 @@ public class MapActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onCameraChanged(CameraPosition cameraPosition) {
-        LatLngBounds bounds = this.mMap.getProjection().getVisibleRegion().latLngBounds;
-        fetchNearCrimes(bounds);
+    /**
+     * Method for handling fetched data from the background queue
+     *
+     * @param event contains locations
+     */
+    public void onEventMainThread(FetchedDataEvent event) {
+        mClusterManager.addItems(event.getLocations());
+        mClusterManager.cluster();
     }
 
-
-    private void fetchNearCrimes(LatLngBounds bounds) {
-        LatLng center = mMap.getCameraPosition().target;
-
-        double distance = SphericalUtil.computeDistanceBetween(center, bounds.northeast);
-
-        ParseGeoPoint point =
-                new ParseGeoPoint(center.latitude, center.longitude);
-        ParseHelper.getInstance().downloadNear(point, distance, new ParseHelper.OnLoadCrimesListener() {
-            @Override
-            public void onLoadCrimes(List<CrimeLocation> crimes) {
-
-                CrimeLocation[] crimeLocations =
-                        crimes.toArray(new CrimeLocation[crimes.size()]);
-
-                new AsyncTask<CrimeLocation, CrimeLocation, Void>() {
-
-                    @Override
-                    protected Void doInBackground(CrimeLocation... crimes) {
-                        for (CrimeLocation crime : crimes) {
-                            publishProgress(crime);
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    protected void onProgressUpdate(CrimeLocation... values) {
-                        super.onProgressUpdate(values);
-                        mClusterManager.addItem(values[0]);
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        super.onPostExecute(aVoid);
-                        mClusterManager.cluster();
-                    }
-                }.execute(crimeLocations);
-            }
-        });
+    @Override
+    public void onCameraChanged(CameraPosition cameraPosition) {
+        FetchLocationsIntentService
+                .startActionFetch(
+                        this,
+                        cameraPosition.target,
+                        SphericalUtil.computeDistanceBetween(
+                                cameraPosition.target,
+                                mMap.getProjection()
+                                        .getVisibleRegion()
+                                        .latLngBounds.northeast)
+                        );
     }
 
     @Override
