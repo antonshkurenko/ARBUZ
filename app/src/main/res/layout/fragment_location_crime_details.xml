@@ -1,0 +1,38 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/location_crime_details_rectangle"
+    tools:context="me.cullycross.arbuz.fragments.LocationCrimeDetailsFragment">
+
+    <TextView
+        android:id="@+id/locationAdressTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/location_crime_address_bottom_line"
+        android:text="@string/location_crime_details_fragment_location_address" />
+
+    <TextView
+        android:id="@+id/crimeDetailsTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/locationAdressTextView"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/location_crime_details_fragment_crime_details" />
+
+    <ImageButton
+        android:id="@+id/locationCrimeDetailsFragmentCloseButton"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        android:src="@mipmap/ic_close_icon"
+        android:tint="#666666" />
+</RelativeLayout>
