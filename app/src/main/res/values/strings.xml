@@ -20,6 +20,13 @@
     <string name="parse_application_id">XDBnSlerhSroUGtZ4pqJEzv7TFpNMPhIZPtRF9Fm</string>
     <string name="parse_client_key">A7IIbizYbnzZ6EbL1wyWoPtnGEdBoNmErPpufkWn</string>
 
+    <!-- Red button -->
+    <string name="red_button_activity_text_box_hint">Password</string>
+    <string name="red_button_activity_cancel_call_button_text">Cancel</string>
+    <string name="red_button_activity_red_button_text">Press me!</string>
+    <string name="red_button_activity_message">Your messages has been sent.</string>
+    <string name="title_activity_red_button">Red Button</string>
+
     <string-array name="direction_route_types">
         <item>Driving</item>
         <item>Walking</item>

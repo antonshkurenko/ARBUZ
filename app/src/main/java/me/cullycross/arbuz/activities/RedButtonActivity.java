@@ -2,10 +2,13 @@ package me.cullycross.arbuz.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,7 +25,7 @@ public class RedButtonActivity extends AppCompatActivity {
     @Bind(R.id.warningImageView)
     ImageView warningImageView;
     @Bind(R.id.passwordEditText)
-    TextView passwordTextView;
+    EditText passwordEditText;
     @Bind(R.id.cancelCallButton)
     Button cancelCallButton;
 
@@ -31,6 +34,29 @@ public class RedButtonActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_red_button);
         ButterKnife.bind(this);
+
+        cancelCallButton.setEnabled(false);
+        passwordEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(editable.length() > 0) {
+                    cancelCallButton.setEnabled(true);
+                } else {
+                    cancelCallButton.setEnabled(false);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -60,7 +86,12 @@ public class RedButtonActivity extends AppCompatActivity {
         redButton.setVisibility(View.INVISIBLE);
         warningImageView.setVisibility(View.VISIBLE);
         messageTextView.setVisibility(View.VISIBLE);
-        passwordTextView.setVisibility(View.VISIBLE);
+        passwordEditText.setVisibility(View.VISIBLE);
         cancelCallButton.setVisibility(View.VISIBLE);
+    }
+
+    @OnClick(R.id.cancelCallButton)
+    public void finishThis() {
+        finish();
     }
 }

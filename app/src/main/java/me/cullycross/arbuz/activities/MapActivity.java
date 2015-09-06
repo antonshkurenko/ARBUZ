@@ -133,6 +133,10 @@ public class MapActivity extends AppCompatActivity
         }
     }
 
+    @OnClick(R.id.action_red_button)
+    public void openRedButtonActivity() {
+        startActivity(new Intent(this, RedButtonActivity.class));
+    }
 
     @Override
     public void onCameraChanged(CameraPosition cameraPosition) {

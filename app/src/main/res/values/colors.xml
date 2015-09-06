@@ -2,4 +2,5 @@
 <resources>
     <color name="black_translucent">#44000000</color>
     <color name="black">#000</color>
+    <color name="grey">#303030</color>
 </resources>

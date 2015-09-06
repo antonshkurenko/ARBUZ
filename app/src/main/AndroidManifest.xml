@@ -39,6 +39,11 @@
             android:label="@string/title_activity_settings" >
         </activity>
 
+        <activity
+            android:name=".activities.RedButtonActivity"
+            android:label="@string/title_activity_red_button" >
+        </activity>
+
         <service
             android:name=".services.BackgroundQueueIntentService"
             android:exported="false" >
