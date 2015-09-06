@@ -49,7 +49,7 @@ public class LocationHelper
         LocationListener {
 
     private static final int SCAN_PERIOD = 60 * 1000;
-    private static final int SAVED_LOCATIONS_COUNT = 10;
+    private static final int SAVED_LOCATIONS_COUNT = 2;
 
     private static final int MAX_ELEMENTS = 3;
     private static final String TAG = LocationHelper.class.getName();
@@ -166,24 +166,7 @@ public class LocationHelper
 
             for (LatLng node : route) {
 
-                int safeNodePoints = 0;
-
-                final ParseGeoPoint nodeGeoPoint =
-                        new ParseGeoPoint(node.latitude, node.longitude);
-
-                for (CrimeLocation crime : crimes) {
-                    if (crime
-                            .getLocation()
-                            .distanceInKilometersTo(
-                                    nodeGeoPoint) < ParseHelper.NEAR_DISTANCE) {
-                        final double distance =
-                                crime.getLocation().distanceInKilometersTo(nodeGeoPoint) / 1000;
-                        final double percentage = 1 - distance / ParseHelper.NEAR_DISTANCE;
-
-                        safeNodePoints += crime.getTotalPoints() * percentage;
-                    }
-                }
-
+                int safeNodePoints = getLocationPoints(node, crimes);
                 safeRoutePoints += safeNodePoints;
             }
             Log.d(TAG, "Safe points: " + safeRoutePoints + " routeIndex: " + i);
@@ -199,6 +182,26 @@ public class LocationHelper
         return routes.get(routeIndex);
     }
 
+    public int getLocationPoints(LatLng node, Set<CrimeLocation> crimes) {
+        int safeNodePoints = 0;
+
+        final ParseGeoPoint nodeGeoPoint =
+                new ParseGeoPoint(node.latitude, node.longitude);
+
+        for (CrimeLocation crime : crimes) {
+            if (crime
+                    .getLocation()
+                    .distanceInKilometersTo(
+                            nodeGeoPoint) < ParseHelper.NEAR_DISTANCE) {
+                final double distance =
+                        crime.getLocation().distanceInKilometersTo(nodeGeoPoint) / 1000;
+                final double percentage = 1 - distance / ParseHelper.NEAR_DISTANCE;
+
+                safeNodePoints += crime.getTotalPoints() * percentage;
+            }
+        }
+        return safeNodePoints;
+    }
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -230,7 +233,9 @@ public class LocationHelper
         }
         mSavedLocations.add(location);
 
-        EventBus.getDefault().post(new LocationsListUpdateEvent(mSavedLocations));
+        if(mSavedLocations.size() == SAVED_LOCATIONS_COUNT) {
+            EventBus.getDefault().post(new LocationsListUpdateEvent(mSavedLocations));
+        }
     }
 
     @Nullable

@@ -123,7 +123,6 @@ public class ParseHelper {
                     Log.d(TAG, "Before: sCrimes.size() = " + sCrimes.size() +
                             " locations.size() = " + locations.size() + " sum = " + (sCrimes.size() + locations.size()));
                     sCrimes.addAll(locations);
-                    Log.d(TAG, "After: sCrimes.size() = " + sCrimes.size());
 
                     mSkip += FETCH_OBJECTS_LIMIT;
 

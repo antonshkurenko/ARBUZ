@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import me.cullycross.arbuz.R;
@@ -31,6 +33,7 @@ import me.cullycross.arbuz.events.LocationFoundEvent;
 import me.cullycross.arbuz.fragments.ArbuzMapFragment;
 import me.cullycross.arbuz.fragments.DirectionsDialogFragment;
 import me.cullycross.arbuz.services.BackgroundQueueIntentService;
+import me.cullycross.arbuz.services.LocationService;
 import me.cullycross.arbuz.utils.FetchingClusterManager;
 import me.cullycross.arbuz.utils.LocationHelper;
 
@@ -46,6 +49,8 @@ public class MapActivity extends AppCompatActivity
 
     /*@Bind(R.id.toggle_button_heatmap)
     ToggleButton mToggleButtonHeatmap;*/
+    @Bind(R.id.toggle_button_location)
+    ToggleButton mToggleButtonLocation;
     @Bind(R.id.action_safe_way)
     Button mActionSafeWay;
     @Bind(R.id.action_red_button)
@@ -118,6 +123,16 @@ public class MapActivity extends AppCompatActivity
             }
         }
     }*/
+
+    @OnCheckedChanged(R.id.toggle_button_location)
+    public void onChecked(boolean flag) {
+        if(flag) {
+            startService(new Intent(this, LocationService.class));
+        } else {
+            stopService(new Intent(this, LocationService.class));
+        }
+    }
+
 
     @Override
     public void onCameraChanged(CameraPosition cameraPosition) {
