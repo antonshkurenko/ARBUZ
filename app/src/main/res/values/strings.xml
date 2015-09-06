@@ -1,31 +1,44 @@
 <resources>
     <string name="app_name">ARBUZ</string>
 
-    <string name="action_settings">Settings</string>
+    <!--<string name="action_settings">Settings</string>-->
+    <string name="action_settings">Налаштування</string>
 
     <!-- Toolbar strings -->
-    <string name="toolbar_menu_safe_way">Safe way</string>
-    <string name="toolbar_menu_red_button">Red button</string>
-    <string name="toolbar_menu_settings">Settings</string>
+    <!--<string name="toolbar_menu_safe_way">Safe way</string>-->
+    <string name="toolbar_menu_safe_way">Безп. маршрут</string>
+    <!--<string name="toolbar_menu_red_button">Red button</string>-->
+    <string name="toolbar_menu_red_button">Червона кнопка</string>
+    <!--<string name="toolbar_menu_settings">Settings</string>-->
+    <string name="toolbar_menu_settings">Налаштування</string>
 
     <!-- Map controls -->
-    <string name="map_controls_heatmap">Heatmap</string>
-    <string name="map_controls_location">Track location</string>
+    <!--<string name="map_controls_heatmap">Heatmap</string>-->
+    <string name="map_controls_heatmap">Градієнт</string>
+    <!--<string name="map_controls_location">Track location</string>-->
+    <string name="map_controls_location">Стежити</string>
 
-    <!-- Direction values -->
-    <string name="directions_fragment_from_hint">From</string>
-    <string name="directions_fragment_to_hint">To</string>
+    <!-- Direction values --><!--
+    <string name="directions_fragment_from_hint">From</string>-->
+    <string name="directions_fragment_from_hint">Звідки</string><!--
+    <string name="directions_fragment_to_hint">To</string>-->
+    <string name="directions_fragment_to_hint">Куди</string>
 
     <!-- Parse strings -->
     <string name="parse_application_id">XDBnSlerhSroUGtZ4pqJEzv7TFpNMPhIZPtRF9Fm</string>
     <string name="parse_client_key">A7IIbizYbnzZ6EbL1wyWoPtnGEdBoNmErPpufkWn</string>
 
     <!-- Red button -->
-    <string name="red_button_activity_text_box_hint">Password</string>
-    <string name="red_button_activity_cancel_call_button_text">Cancel</string>
-    <string name="red_button_activity_red_button_text">Press me!</string>
-    <string name="red_button_activity_message">Your messages has been sent.</string>
-    <string name="title_activity_red_button">Red Button</string>
+    <!--<string name="red_button_activity_text_box_hint">Password</string>-->
+    <string name="red_button_activity_text_box_hint">Пароль</string>
+    <!--<string name="red_button_activity_cancel_call_button_text">Cancel</string>-->
+    <string name="red_button_activity_cancel_call_button_text">Відміна</string>
+    <!--<string name="red_button_activity_red_button_text">Press me!</string>-->
+    <string name="red_button_activity_red_button_text">Натисни на мене!</string>
+    <!--<string name="red_button_activity_message">Your messages has been sent.</string>-->
+    <string name="red_button_activity_message">Ваше повідомлення надіслане.</string>
+    <!--<string name="title_activity_red_button">Red Button</string>-->
+    <string name="title_activity_red_button">Червона кнопка</string>
 
     <string-array name="direction_route_types">
         <item>Driving</item>

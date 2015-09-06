@@ -87,8 +87,10 @@ public class DirectionsDialogFragment extends DialogFragment
 
         builder.setView(dialogView)
                 // Add action buttons
+                .setPositiveButton("Знайти", this)
+                .setNegativeButton("Відміна", this);/*
                 .setPositiveButton("Find", this)
-                .setNegativeButton("Cancel", this);
+                .setNegativeButton("Cancel", this);*/
         return builder.create();
     }
 

@@ -13,7 +13,7 @@ import com.parse.ParseObject;
  * For my shining stars!
  */
 
-@ParseClassName("data_03_2013_part1") // ARRRRRRRRRR
+@ParseClassName("data_01_2013_part1") // ARRRRRRRRRR
 public class CrimeLocation extends ParseObject implements ClusterItem {
 
     public static final String LOCATION = "location";

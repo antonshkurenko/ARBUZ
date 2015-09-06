@@ -48,62 +48,62 @@ public class CrimeInfoViewAdapter implements GoogleMap.InfoWindowAdapter {
             List<String> crimeStats = new ArrayList<>();
 
             if(neededCrime.getBodilyHarmWithFatalCons() != 0) {
-                crimeStats.add("BodilyHarmWithFatalCons: "
+                crimeStats.add("Тяжкі тіл. з смертельними насл.: "
                         + neededCrime.getBodilyHarmWithFatalCons());
             }
 
             if(neededCrime.getBrigandage() != 0) {
-                crimeStats.add("Brigandage: "
+                crimeStats.add("Розбій: "
                         + neededCrime.getBrigandage());
             }
 
             if(neededCrime.getDrugs() != 0) {
-                crimeStats.add("Drugs: "
+                crimeStats.add("Наркотики: "
                         + neededCrime.getDrugs());
             }
 
             if(neededCrime.getExtortion() != 0) {
-                crimeStats.add("Extortion: "
+                crimeStats.add("Вимагання: "
                         + neededCrime.getExtortion());
             }
 
             if(neededCrime.getFraud() != 0) {
-                crimeStats.add("Fraud: "
+                crimeStats.add("Шахрайство: "
                         + neededCrime.getFraud());
             }
 
             if(neededCrime.getHeavOsoboHeav() != 0) {
-                crimeStats.add("HeavOsoboHeavy: "
+                crimeStats.add("Тяжкі та особливо тяжкі: "
                         + neededCrime.getHeavOsoboHeav());
             }
 
             if(neededCrime.getHooliganism() != 0) {
-                crimeStats.add("Hooliganism: "
+                crimeStats.add("Хуліганізм: "
                         + neededCrime.getHooliganism());
             }
 
             if(neededCrime.getIntentionalInjury() != 0) {
-                crimeStats.add("IntentionalInjury: "
+                crimeStats.add("Умисне нанесення травм: "
                         + neededCrime.getIntentionalInjury());
             }
 
             if(neededCrime.getLooting() != 0) {
-                crimeStats.add("Looting: "
+                crimeStats.add("Грабіж: "
                         + neededCrime.getLooting());
             }
 
             if(neededCrime.getMurder() != 0) {
-                crimeStats.add("Murder: "
+                crimeStats.add("Вбивство: "
                         + neededCrime.getMurder());
             }
 
             if(neededCrime.getRape() != 0) {
-                crimeStats.add("Rape: "
+                crimeStats.add("Згвалтування: "
                         + neededCrime.getRape());
             }
 
             if(neededCrime.getTheft() != 0) {
-                crimeStats.add("Theft: "
+                crimeStats.add("Крадіжка: "
                         + neededCrime.getTheft());
             }
 

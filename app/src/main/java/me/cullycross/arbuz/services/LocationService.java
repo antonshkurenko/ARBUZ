@@ -69,9 +69,11 @@ public class LocationService extends Service {
         Log.d(TAG, "Now points: " + nowPoints + ", " + "prediction points: " + predictionPoints);
 
         if (predictionPoints * 0.75f > nowPoints) {
-            showNotification("Warning!", "You are moving into the danger zone.", "Warning!");
+//            showNotification("Warning!", "Warning!", "You're moving into the dangerous zone.");
+            showNotification("Увага!", "Увага!", "Ви прямуєте до небезпечного району.");
         } else if (predictionPoints < nowPoints * 0.75f) {
-            showNotification("Gratz!", "You are moving out of the danger zone.", "Gratz!");
+//            showNotification("Gratz!", "Gratz!", "You're moving out of the dangerous zone.");
+            showNotification("Вітаємо!", "Вітаємо!", "Ви залишаєте небезпечний район.");
         }
 
     }
@@ -93,6 +95,13 @@ public class LocationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         LocationHelper.getInstance().startLocationUpdates();
+
+        /**
+         * test method
+         */
+//        showNotification("Warning!", "Warning!", "You're moving into the dangerous zone.");
+        showNotification("Увага!", "Увага!", "Ви прямуєте до небезпечного району.");
+        /*************/
 
         return super.onStartCommand(intent, flags, startId);
     }
