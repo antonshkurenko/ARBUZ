@@ -15,6 +15,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
@@ -192,9 +193,9 @@ public class MapActivity extends AppCompatActivity
     }
 
     @Override
-    public void onWayFound(List<LatLng> safeWay) {
+    public void onWayFound(final List<LatLng> safeWay) {
 
-            final PolylineOptions options = new PolylineOptions().width(5).color(Color.BLACK).geodesic(true);
+            final PolylineOptions options = new PolylineOptions().width(7).color(Color.BLUE).geodesic(true);
             for (LatLng point : safeWay) {
                 options.add(point);
             }
@@ -203,6 +204,12 @@ public class MapActivity extends AppCompatActivity
                 @Override
                 public void run() {
                     mMap.addPolyline(options);
+                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                    builder.include(safeWay.get(0))
+                            .include(safeWay.get(safeWay.size() - 1));
+
+                    LatLngBounds latLngBounds = builder.build();
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50));
                 }
             });
     }

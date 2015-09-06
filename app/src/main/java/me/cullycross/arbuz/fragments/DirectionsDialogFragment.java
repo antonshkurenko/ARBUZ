@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -107,9 +108,12 @@ public class DirectionsDialogFragment extends DialogFragment
         switch (which) {
 
             case DialogInterface.BUTTON_POSITIVE:
-
-                //fixme(CullyCross): fix nullpointerexception with null mToPoint and mFromPoint
-                sendDirectionRequest();
+                if(mFromPoint!=null && mToPoint!=null) {
+                    sendDirectionRequest();
+                } else {
+                    // fixme(CullyCross): handle it better later
+                    Toast.makeText(getActivity(), "Fill fields", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case DialogInterface.BUTTON_NEGATIVE:
                 DirectionsDialogFragment.this.getDialog().cancel();
@@ -147,6 +151,9 @@ public class DirectionsDialogFragment extends DialogFragment
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 mFromPoint = ((AutoCompleteAdapter) mDelayAutoCompleteFrom.getAdapter()).getItem(i);
+                if(mToPoint != null) {
+                    setPositiveButtonEnabled(true);
+                }
             }
         });
 
@@ -159,6 +166,9 @@ public class DirectionsDialogFragment extends DialogFragment
                                 keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
 
                     mFromPoint = ((AutoCompleteAdapter) mDelayAutoCompleteFrom.getAdapter()).getItem(0);
+                    if(mToPoint != null) {
+                        setPositiveButtonEnabled(true);
+                    }
                     return true; // consume.
                 }
                 return false; // pass on to other listeners.
@@ -173,6 +183,9 @@ public class DirectionsDialogFragment extends DialogFragment
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 mToPoint = ((AutoCompleteAdapter) mDelayAutoCompleteTo.getAdapter()).getItem(i);
+                if(mFromPoint != null) {
+                    setPositiveButtonEnabled(true);
+                }
             }
         });
 
@@ -185,6 +198,9 @@ public class DirectionsDialogFragment extends DialogFragment
                                 keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
 
                     mToPoint = ((AutoCompleteAdapter) mDelayAutoCompleteTo.getAdapter()).getItem(0);
+                    if(mFromPoint != null) {
+                        setPositiveButtonEnabled(true);
+                    }
                     return true; // consume.
                 }
                 return false; // pass on to other listeners.
