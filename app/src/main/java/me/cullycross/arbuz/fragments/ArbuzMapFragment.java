@@ -5,9 +5,13 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.maps.SupportMapFragment;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import me.cullycross.arbuz.R;
 
 public class ArbuzMapFragment extends SupportMapFragment {
@@ -27,10 +31,7 @@ public class ArbuzMapFragment extends SupportMapFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View mapView = super.onCreateView(inflater, container, savedInstanceState);
-
-
-        return mapView;
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override

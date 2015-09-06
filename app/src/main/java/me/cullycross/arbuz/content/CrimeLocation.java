@@ -2,6 +2,7 @@ package me.cullycross.arbuz.content;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -59,6 +60,10 @@ public class CrimeLocation extends ParseObject implements ClusterItem{
         final ParseGeoPoint point = getLocation();
         return new LatLng(point.getLatitude(), point.getLongitude());
     }
+
+    /*public WeightedLatLng getWeightedLatLng() {
+        return new WeightedLatLng(getPosition(), getTotalPoints());
+    }*/
 
     public ParseGeoPoint getLocation() {
         return getParseGeoPoint(LOCATION);

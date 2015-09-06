@@ -2,17 +2,11 @@ package me.cullycross.arbuz.activities;
 
 import android.graphics.Color;
 import android.content.Intent;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.ToggleButton;
-import android.widget.Button;
-import android.widget.ToggleButton;
-import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,27 +14,22 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.SphericalUtil;
-import com.google.maps.android.clustering.ClusterManager;
-import com.parse.FindCallback;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.parse.ParseAnalytics;
-import com.parse.ParseException;
-import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
-import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import me.cullycross.arbuz.R;
@@ -64,8 +53,8 @@ public class MapActivity extends AppCompatActivity
 
     private static final String FRAGMENT_DIALOG_DIRECTIONS = "fragment_dialog_directions";
 
-    @Bind(R.id.toggle_button_heatmap)
-    ToggleButton mToggleButtonHeatmap;
+    /*@Bind(R.id.toggle_button_heatmap)
+    ToggleButton mToggleButtonHeatmap;*/
     @Bind(R.id.action_safe_way)
     Button mActionSafeWay;
     @Bind(R.id.action_red_button)
@@ -78,6 +67,12 @@ public class MapActivity extends AppCompatActivity
     private LocationHelper mLocationHelper;
 
     private FetchingClusterManager mClusterManager;
+    /*
+    private HeatmapTileProvider mHeatmapTileProvider = null;
+    private TileOverlay mHeatTileOverlay;
+
+    private List<WeightedLatLng> mWeightedCrimes = null;
+    */
 
     /**
      * Method for handling found location
@@ -98,7 +93,40 @@ public class MapActivity extends AppCompatActivity
     public void onEventMainThread(FetchedDataEvent event) {
         mClusterManager.addItems(event.getLocations());
         mClusterManager.cluster();
+        //addWeightedToHeatmap();
     }
+
+    /**
+     * todo(CullyCross): later add heatmap
+     */
+    /*@OnCheckedChanged(R.id.toggle_button_heatmap)
+    public void onChecked(boolean flag) {
+        if (flag) {
+            if (mWeightedCrimes == null ||
+                    ParseHelper.getInstance().getCrimes().size() != mWeightedCrimes.size()) {
+                addWeightedToHeatmap();
+                mHeatTileOverlay = mMap.addTileOverlay(
+                        new TileOverlayOptions().tileProvider(mHeatmapTileProvider));
+            }
+            mHeatTileOverlay.setVisible(true);
+            for (Marker marker : mClusterManager.getMarkerCollection().getMarkers()) {
+                (marker).setVisible(false);
+            }
+
+            for(Marker marker : mClusterManager.getClusterMarkerCollection().getMarkers()) {
+                (marker).setVisible(false);
+            }
+        } else {
+            mHeatTileOverlay.setVisible(false);
+            for (Marker marker : mClusterManager.getMarkerCollection().getMarkers()) {
+                (marker).setVisible(true);
+            }
+
+            for(Marker marker : mClusterManager.getClusterMarkerCollection().getMarkers()) {
+                (marker).setVisible(true);
+            }
+        }
+    }*/
 
     @Override
     public void onCameraChanged(CameraPosition cameraPosition) {
@@ -111,7 +139,7 @@ public class MapActivity extends AppCompatActivity
                                 mMap.getProjection()
                                         .getVisibleRegion()
                                         .latLngBounds.northeast)
-                        );
+                );
     }
 
     @Override
@@ -192,4 +220,20 @@ public class MapActivity extends AppCompatActivity
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
         ParseObject.registerSubclass(CrimeLocation.class);
     }
+
+    /*private void addWeightedToHeatmap() {
+        mWeightedCrimes =
+                ParseHelper
+                        .getInstance()
+                        .convertCrimeToWeighted(ParseHelper.getInstance().getCrimes());
+
+        if (mHeatmapTileProvider == null && mWeightedCrimes.size() != 0) {
+            mHeatmapTileProvider = new HeatmapTileProvider
+                    .Builder()
+                    .weightedData(mWeightedCrimes)
+                    .build();
+        } else {
+            mHeatmapTileProvider.setWeightedData(mWeightedCrimes);
+        }
+    }*/
 }

@@ -3,6 +3,7 @@ package me.cullycross.arbuz.utils;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -30,7 +31,7 @@ public class ParseHelper {
     private final NoLimitFindCallback mFindCallback;
 
     // store in the RAM
-    private Set<CrimeLocation> mCrimes = new HashSet<>();
+    private final Set<CrimeLocation> mCrimes = new HashSet<>();
 
     // skip values
     private int mSkip = 0;
@@ -52,6 +53,14 @@ public class ParseHelper {
     public Set<CrimeLocation> getCrimes() {
         return mCrimes;
     }
+
+    /*public List<WeightedLatLng> convertCrimeToWeighted(Set<CrimeLocation> crimes) {
+        List<WeightedLatLng> weightedLatLngs = new ArrayList<>(crimes.size());
+        for(CrimeLocation crime: crimes) {
+            weightedLatLngs.add(crime.getWeightedLatLng());
+        }
+        return weightedLatLngs;
+    }*/
 
     public void downloadAll(OnLoadCrimesListener listener) {
         ParseQuery<CrimeLocation> query = ParseQuery.getQuery(CrimeLocation.class);
