@@ -21,6 +21,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
+import com.parse.ParseGeoPoint;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,10 +29,13 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import de.greenrobot.event.EventBus;
+import me.cullycross.arbuz.content.CrimeLocation;
 import me.cullycross.arbuz.events.LocationFoundEvent;
 import me.cullycross.arbuz.events.LocationsListUpdateEvent;
 
@@ -49,6 +53,8 @@ public class LocationHelper
 
     private static final int MAX_ELEMENTS = 3;
     private static final String TAG = LocationHelper.class.getName();
+
+    private static final int INFINITY = Integer.MAX_VALUE;
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -144,6 +150,55 @@ public class LocationHelper
         });
         queue.add(stringRequest);
     }
+
+    public List<LatLng> getSafeWay(List<List<LatLng>> routes, Set<CrimeLocation> crimes) {
+
+        final long startTime = System.currentTimeMillis();
+
+        int min = INFINITY;
+        int routeIndex = INFINITY;
+
+        final int size = routes.size();
+        for (int i = 0; i < size; i++) {
+            final List<LatLng> route = routes.get(i);
+
+            int safeRoutePoints = 0;
+
+            for (LatLng node : route) {
+
+                int safeNodePoints = 0;
+
+                final ParseGeoPoint nodeGeoPoint =
+                        new ParseGeoPoint(node.latitude, node.longitude);
+
+                for (CrimeLocation crime : crimes) {
+                    if (crime
+                            .getLocation()
+                            .distanceInKilometersTo(
+                                    nodeGeoPoint) < ParseHelper.NEAR_DISTANCE) {
+                        final double distance =
+                                crime.getLocation().distanceInKilometersTo(nodeGeoPoint) / 1000;
+                        final double percentage = 1 - distance / ParseHelper.NEAR_DISTANCE;
+
+                        safeNodePoints += crime.getTotalPoints() * percentage;
+                    }
+                }
+
+                safeRoutePoints += safeNodePoints;
+            }
+            Log.d(TAG, "Safe points: " + safeRoutePoints + " routeIndex: " + i);
+            if (min > safeRoutePoints) {
+                min = safeRoutePoints;
+                routeIndex = i;
+            }
+        }
+
+        final long elapsedTime = System.currentTimeMillis() - startTime;
+
+        Log.d(TAG, "Find safe way, elapsed time: " + elapsedTime + ", routeIndex: " + routeIndex);
+        return routes.get(routeIndex);
+    }
+
 
     @Override
     public void onConnected(Bundle bundle) {

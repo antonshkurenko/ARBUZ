@@ -3,7 +3,8 @@ package me.cullycross.arbuz.utils;
 import android.content.Context;
 import android.util.Log;
 
-import com.google.maps.android.heatmaps.WeightedLatLng;
+import com.android.internal.util.Predicate;
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
@@ -23,15 +24,16 @@ import me.cullycross.arbuz.content.CrimeLocation;
  */
 public class ParseHelper {
 
-    public static final int FETCH_OBJECTS_LIMIT = 25;
     public static final float NEAR_DISTANCE = 0.3f;
+
+    private static final int FETCH_OBJECTS_LIMIT = 25;
     private static final String TAG = ParseHelper.class.getName();
     private Context mContext;
 
     private final NoLimitFindCallback mFindCallback;
 
     // store in the RAM
-    private final Set<CrimeLocation> mCrimes = new HashSet<>();
+    private final static Set<CrimeLocation> sCrimes = new HashSet<>();
 
     // skip values
     private int mSkip = 0;
@@ -51,7 +53,7 @@ public class ParseHelper {
     }
 
     public Set<CrimeLocation> getCrimes() {
-        return mCrimes;
+        return sCrimes;
     }
 
     /*public List<WeightedLatLng> convertCrimeToWeighted(Set<CrimeLocation> crimes) {
@@ -87,7 +89,7 @@ public class ParseHelper {
         mFindCallback.mNear = near;
         mFindCallback.mDistance = distance;
 
-        if(distance != 0) {
+        if (distance != 0) {
             distance = NEAR_DISTANCE;
         }
 
@@ -111,23 +113,23 @@ public class ParseHelper {
         public void done(List<CrimeLocation> locations, ParseException e) {
             if (e == null) {
 
-                locations.removeAll(mCrimes);
+                locations.removeAll(sCrimes);
 
                 if (locations.size() != 0) {
                     if (mListener != null) {
                         mListener.onLoadCrimes(locations);
                     }
 
-                    Log.d(TAG, "Before: mCrimes.size() = " + mCrimes.size() +
-                    " locations.size() = " + locations.size() + " sum = " + (mCrimes.size()+locations.size()));
-                    mCrimes.addAll(locations);
-                    Log.d(TAG, "After: mCrimes.size() = " + mCrimes.size());
+                    Log.d(TAG, "Before: sCrimes.size() = " + sCrimes.size() +
+                            " locations.size() = " + locations.size() + " sum = " + (sCrimes.size() + locations.size()));
+                    sCrimes.addAll(locations);
+                    Log.d(TAG, "After: sCrimes.size() = " + sCrimes.size());
 
                     mSkip += FETCH_OBJECTS_LIMIT;
 
                     ParseQuery<CrimeLocation> query = ParseQuery.getQuery(CrimeLocation.class);
 
-                    if(mDistance == 0) {
+                    if (mDistance == 0) {
                         mDistance = NEAR_DISTANCE;
                     }
 

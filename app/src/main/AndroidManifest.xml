@@ -40,7 +40,7 @@
         </activity>
 
         <service
-            android:name=".services.FetchLocationsIntentService"
+            android:name=".services.BackgroundQueueIntentService"
             android:exported="false" >
         </service>
     </application>

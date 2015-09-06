@@ -14,7 +14,7 @@ import com.parse.ParseObject;
  */
 
 @ParseClassName("data_03_2013_part1") // ARRRRRRRRRR
-public class CrimeLocation extends ParseObject implements ClusterItem{
+public class CrimeLocation extends ParseObject implements ClusterItem {
 
     public static final String LOCATION = "location";
     public static final String BUILDING = "building";

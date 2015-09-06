@@ -34,6 +34,7 @@ import me.cullycross.arbuz.R;
 import me.cullycross.arbuz.adapters.AutoCompleteAdapter;
 import me.cullycross.arbuz.utils.DelayAutoCompleteTextView;
 import me.cullycross.arbuz.utils.LocationHelper;
+import me.cullycross.arbuz.utils.ParseHelper;
 
 /**
  * Created by: cullycross
@@ -220,8 +221,14 @@ public class DirectionsDialogFragment extends DialogFragment
         LocationHelper.getInstance().getDirections(from, to, mMode, new LocationHelper.OnRoutesFoundListener() {
             @Override
             public void onRouteFound(List<List<LatLng>> routes) {
+
+                List<LatLng> safeWay =
+                        LocationHelper
+                                .getInstance()
+                                .getSafeWay(routes, ParseHelper.getInstance().getCrimes());
+
                 if (mListener != null) {
-                    mListener.onWayFound(routes);
+                    mListener.onWayFound(safeWay);
                 }
             }
         });
@@ -238,8 +245,7 @@ public class DirectionsDialogFragment extends DialogFragment
     }
 
     public interface OnFragmentInteractionListener {
-        //void onWayFound(List<LatLng> safeWay);
-        void onWayFound(List<List<LatLng>> safeWay);
+        void onWayFound(List<LatLng> safeWay);
     }
 
     public static class MoreThanOneTextWatcher implements TextWatcher {

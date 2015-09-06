@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
-import android.widget.ToggleButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -14,22 +13,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.SphericalUtil;
-import com.google.maps.android.heatmaps.HeatmapTileProvider;
-import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.parse.ParseAnalytics;
 import com.parse.ParseObject;
 
-import java.util.Iterator;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import me.cullycross.arbuz.R;
@@ -38,10 +30,9 @@ import me.cullycross.arbuz.events.FetchedDataEvent;
 import me.cullycross.arbuz.events.LocationFoundEvent;
 import me.cullycross.arbuz.fragments.ArbuzMapFragment;
 import me.cullycross.arbuz.fragments.DirectionsDialogFragment;
-import me.cullycross.arbuz.services.FetchLocationsIntentService;
+import me.cullycross.arbuz.services.BackgroundQueueIntentService;
 import me.cullycross.arbuz.utils.FetchingClusterManager;
 import me.cullycross.arbuz.utils.LocationHelper;
-import me.cullycross.arbuz.utils.ParseHelper;
 
 public class MapActivity extends AppCompatActivity
         implements OnMapReadyCallback,
@@ -130,7 +121,7 @@ public class MapActivity extends AppCompatActivity
 
     @Override
     public void onCameraChanged(CameraPosition cameraPosition) {
-        FetchLocationsIntentService
+        BackgroundQueueIntentService
                 .startActionFetch(
                         this,
                         cameraPosition.target,
@@ -157,13 +148,11 @@ public class MapActivity extends AppCompatActivity
         startActivity(openSettingsIntent);
     }
 
-    // todo(CullyCross): later find safe way
     @Override
-    public void onWayFound(List<List<LatLng>> safeWay) {
-        for (List<LatLng> list : safeWay) {
+    public void onWayFound(List<LatLng> safeWay) {
 
             final PolylineOptions options = new PolylineOptions().width(5).color(Color.BLACK).geodesic(true);
-            for (LatLng point : list) {
+            for (LatLng point : safeWay) {
                 options.add(point);
             }
 
@@ -173,7 +162,6 @@ public class MapActivity extends AppCompatActivity
                     mMap.addPolyline(options);
                 }
             });
-        }
     }
 
     @OnClick(R.id.action_safe_way)
