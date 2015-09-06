@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.ToggleButton;
 
@@ -16,6 +17,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
+import com.google.maps.android.clustering.ClusterManager;
 import com.parse.ParseAnalytics;
 import com.parse.ParseObject;
 
@@ -27,6 +29,7 @@ import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import me.cullycross.arbuz.R;
+import me.cullycross.arbuz.adapters.CrimeInfoViewAdapter;
 import me.cullycross.arbuz.content.CrimeLocation;
 import me.cullycross.arbuz.events.FetchedDataEvent;
 import me.cullycross.arbuz.events.LocationFoundEvent;
@@ -63,6 +66,8 @@ public class MapActivity extends AppCompatActivity
     private LocationHelper mLocationHelper;
 
     private FetchingClusterManager mClusterManager;
+
+    private CrimeLocation mClickedCrime;
     /*
     private HeatmapTileProvider mHeatmapTileProvider = null;
     private TileOverlay mHeatTileOverlay;
@@ -87,6 +92,7 @@ public class MapActivity extends AppCompatActivity
      * @param event contains locations
      */
     public void onEventMainThread(FetchedDataEvent event) {
+        List<CrimeLocation> crimes = event.getLocations();
         mClusterManager.addItems(event.getLocations());
         mClusterManager.cluster();
         //addWeightedToHeatmap();
@@ -124,6 +130,10 @@ public class MapActivity extends AppCompatActivity
         }
     }*/
 
+    public CrimeLocation getClickedCrime() {
+        return mClickedCrime;
+    }
+
     @OnCheckedChanged(R.id.toggle_button_location)
     public void onChecked(boolean flag) {
         if(flag) {
@@ -156,6 +166,20 @@ public class MapActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mClusterManager = new FetchingClusterManager(this, mMap, this);
+
+        mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<CrimeLocation>() {
+            @Override
+            public boolean onClusterItemClick(CrimeLocation crimeLocation) {
+                mClickedCrime = crimeLocation;
+                return false;
+            }
+        });
+        mClusterManager
+                .getMarkerCollection()
+                .setOnInfoWindowAdapter(new CrimeInfoViewAdapter(
+                        LayoutInflater.from(this), this));
+
+        mMap.setInfoWindowAdapter(mClusterManager.getMarkerManager());
         mMap.setMyLocationEnabled(true);
         mMap.setOnCameraChangeListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);

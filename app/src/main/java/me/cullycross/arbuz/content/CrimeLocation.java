@@ -36,8 +36,6 @@ public class CrimeLocation extends ParseObject implements ClusterItem {
     public static final String RAPE = "rape";
     public static final String THEFT = "theft";
 
-    private int mId;
-
     @Override
     public boolean equals(Object o) {
         try {
@@ -47,12 +45,9 @@ public class CrimeLocation extends ParseObject implements ClusterItem {
         }
     }
 
-    public int getId() {
-        return mId;
-    }
-
-    public void setId(int id) {
-        mId = id;
+    @Override
+    public int hashCode() {
+        return getObjectId().hashCode();
     }
 
     @Override

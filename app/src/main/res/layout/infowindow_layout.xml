@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical" android:layout_width="152dp"
+    android:layout_height="wrap_content"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/text_view_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="?android:attr/listPreferredItemPaddingStart"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Address"/>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/list_view_crimes"/>
 
 </LinearLayout>
