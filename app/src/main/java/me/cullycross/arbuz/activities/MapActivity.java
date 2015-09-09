@@ -1,12 +1,15 @@
 package me.cullycross.arbuz.activities;
 
-import android.graphics.Color;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.ToggleButton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -16,6 +19,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
@@ -32,6 +36,7 @@ import de.greenrobot.event.EventBus;
 import me.cullycross.arbuz.R;
 import me.cullycross.arbuz.adapters.CrimeInfoViewAdapter;
 import me.cullycross.arbuz.content.CrimeLocation;
+import me.cullycross.arbuz.events.DoneLoadEvent;
 import me.cullycross.arbuz.events.FetchedDataEvent;
 import me.cullycross.arbuz.events.LocationFoundEvent;
 import me.cullycross.arbuz.fragments.ArbuzMapFragment;
@@ -41,6 +46,10 @@ import me.cullycross.arbuz.services.LocationService;
 import me.cullycross.arbuz.utils.FetchingClusterManager;
 import me.cullycross.arbuz.utils.LocationHelper;
 
+/**
+ * todo(CullyCross): later add heatmap
+ */
+
 public class MapActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         ArbuzMapFragment.OnMapInteractionListener,
@@ -49,18 +58,19 @@ public class MapActivity extends AppCompatActivity
 
     private static final String TAG = MapActivity.class.getName();
 
-    private static final String FRAGMENT_DIALOG_DIRECTIONS = "fragment_dialog_directions";
-
-    /*@Bind(R.id.toggle_button_heatmap)
-    ToggleButton mToggleButtonHeatmap;*/
     @Bind(R.id.toggle_button_location)
     ToggleButton mToggleButtonLocation;
     @Bind(R.id.action_safe_way)
     Button mActionSafeWay;
-    @Bind(R.id.action_red_button)
-    Button mActionRedButton;
     @Bind(R.id.action_settings)
     Button mActionSettings;
+    @Bind(R.id.progress_bar)
+    ProgressBar mProgressBar;
+
+    private static final String FRAGMENT_DIALOG_DIRECTIONS = "fragment_dialog_directions";
+
+    private static final int CAMERA_POSITION_CHANGED = 100;
+    private static final int DEFAULT_FETCH_DELAY = 750;
 
     private GoogleMap mMap;
 
@@ -69,12 +79,27 @@ public class MapActivity extends AppCompatActivity
     private FetchingClusterManager mClusterManager;
 
     private CrimeLocation mClickedCrime;
-    /*
-    private HeatmapTileProvider mHeatmapTileProvider = null;
-    private TileOverlay mHeatTileOverlay;
 
-    private List<WeightedLatLng> mWeightedCrimes = null;
-    */
+    private Polyline mLine = null;
+
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            final CameraPosition cameraPosition = ((CameraPosition) msg.obj);
+
+            BackgroundQueueIntentService
+                    .startActionFetch(
+                            MapActivity.this,
+                            cameraPosition.target,
+                            SphericalUtil.computeDistanceBetween(
+                                    cameraPosition.target,
+                                    mMap.getProjection()
+                                            .getVisibleRegion()
+                                            .latLngBounds.northeast)
+                    );
+        }
+    };
 
     /**
      * Method for handling found location
@@ -93,43 +118,18 @@ public class MapActivity extends AppCompatActivity
      * @param event contains locations
      */
     public void onEventMainThread(FetchedDataEvent event) {
-        List<CrimeLocation> crimes = event.getLocations();
         mClusterManager.addItems(event.getLocations());
         mClusterManager.cluster();
-        //addWeightedToHeatmap();
     }
 
     /**
-     * todo(CullyCross): later add heatmap
+     * Method for hiding progressbar on done load of the crimes
+     *
+     * @param event contains locations
      */
-    /*@OnCheckedChanged(R.id.toggle_button_heatmap)
-    public void onChecked(boolean flag) {
-        if (flag) {
-            if (mWeightedCrimes == null ||
-                    ParseHelper.getInstance().getCrimes().size() != mWeightedCrimes.size()) {
-                addWeightedToHeatmap();
-                mHeatTileOverlay = mMap.addTileOverlay(
-                        new TileOverlayOptions().tileProvider(mHeatmapTileProvider));
-            }
-            mHeatTileOverlay.setVisible(true);
-            for (Marker marker : mClusterManager.getMarkerCollection().getMarkers()) {
-                (marker).setVisible(false);
-            }
-
-            for(Marker marker : mClusterManager.getClusterMarkerCollection().getMarkers()) {
-                (marker).setVisible(false);
-            }
-        } else {
-            mHeatTileOverlay.setVisible(false);
-            for (Marker marker : mClusterManager.getMarkerCollection().getMarkers()) {
-                (marker).setVisible(true);
-            }
-
-            for(Marker marker : mClusterManager.getClusterMarkerCollection().getMarkers()) {
-                (marker).setVisible(true);
-            }
-        }
-    }*/
+    public void onEventMainThread(DoneLoadEvent event) {
+        mProgressBar.setVisibility(View.INVISIBLE);
+    }
 
     public CrimeLocation getClickedCrime() {
         return mClickedCrime;
@@ -137,30 +137,23 @@ public class MapActivity extends AppCompatActivity
 
     @OnCheckedChanged(R.id.toggle_button_location)
     public void onChecked(boolean flag) {
-        if(flag) {
+        if (flag) {
             startService(new Intent(this, LocationService.class));
         } else {
             stopService(new Intent(this, LocationService.class));
         }
     }
 
-    @OnClick(R.id.action_red_button)
-    public void openRedButtonActivity() {
-        startActivity(new Intent(this, RedButtonActivity.class));
-    }
-
     @Override
     public void onCameraChanged(CameraPosition cameraPosition) {
-        BackgroundQueueIntentService
-                .startActionFetch(
-                        this,
-                        cameraPosition.target,
-                        SphericalUtil.computeDistanceBetween(
-                                cameraPosition.target,
-                                mMap.getProjection()
-                                        .getVisibleRegion()
-                                        .latLngBounds.northeast)
-                );
+
+        mProgressBar.setIndeterminate(true);
+        mProgressBar.setVisibility(View.VISIBLE);
+        mProgressBar.bringToFront();
+
+        mHandler.removeMessages(CAMERA_POSITION_CHANGED);
+        mHandler.sendMessageDelayed(
+                mHandler.obtainMessage(CAMERA_POSITION_CHANGED, cameraPosition), DEFAULT_FETCH_DELAY);
     }
 
     @Override
@@ -195,23 +188,26 @@ public class MapActivity extends AppCompatActivity
     @Override
     public void onWayFound(final List<LatLng> safeWay) {
 
-            final PolylineOptions options = new PolylineOptions().width(7).color(Color.BLUE).geodesic(true);
-            for (LatLng point : safeWay) {
-                options.add(point);
-            }
+        final PolylineOptions options = new PolylineOptions().width(7).color(Color.BLUE).geodesic(true);
+        for (LatLng point : safeWay) {
+            options.add(point);
+        }
 
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    mMap.addPolyline(options);
-                    LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                    builder.include(safeWay.get(0))
-                            .include(safeWay.get(safeWay.size() - 1));
-
-                    LatLngBounds latLngBounds = builder.build();
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50));
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (mLine != null) {
+                    mLine.remove();
                 }
-            });
+                mLine = mMap.addPolyline(options);
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                builder.include(safeWay.get(0))
+                        .include(safeWay.get(safeWay.size() - 1));
+
+                LatLngBounds latLngBounds = builder.build();
+                mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 50));
+            }
+        });
     }
 
     @OnClick(R.id.action_safe_way)
@@ -225,7 +221,6 @@ public class MapActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         ButterKnife.bind(this);
-
         initLocationHelper();
         initMapFragment();
         initParse();
@@ -258,20 +253,4 @@ public class MapActivity extends AppCompatActivity
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
         ParseObject.registerSubclass(CrimeLocation.class);
     }
-
-    /*private void addWeightedToHeatmap() {
-        mWeightedCrimes =
-                ParseHelper
-                        .getInstance()
-                        .convertCrimeToWeighted(ParseHelper.getInstance().getCrimes());
-
-        if (mHeatmapTileProvider == null && mWeightedCrimes.size() != 0) {
-            mHeatmapTileProvider = new HeatmapTileProvider
-                    .Builder()
-                    .weightedData(mWeightedCrimes)
-                    .build();
-        } else {
-            mHeatmapTileProvider.setWeightedData(mWeightedCrimes);
-        }
-    }*/
 }

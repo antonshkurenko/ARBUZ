@@ -1,23 +1,40 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:theme="@style/Arbuz.Toolbar">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- todo(CullyCross): maybe add compound drawable? -->
-    <Button
-        android:id="@+id/action_safe_way"
-        style="@style/ToolbarMenuItem"
-        android:text="@string/toolbar_menu_safe_way"/>
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginBottom="-3dp"
+        android:layout_gravity="center_horizontal"
+        android:visibility="invisible"
+        android:background="@android:color/transparent"
+        android:progressDrawable="@drawable/crime_fetch_progress_drawable"
+        android:indeterminateDrawable="@drawable/crime_fetch_progress_drawable"
+        style="?android:attr/progressBarStyleHorizontal"/>
 
-    <Button
-        android:id="@+id/action_red_button"
-        style="@style/ToolbarMenuItem"
-        android:text="@string/toolbar_menu_red_button"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:theme="@style/Arbuz.Toolbar"
+        android:background="@color/blue"
+        android:layout_below="@+id/progress_bar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
-    <Button
-        android:id="@+id/action_settings"
-        style="@style/ToolbarMenuItem"
-        android:text="@string/toolbar_menu_settings"/>
-</LinearLayout>
+        <!-- todo(CullyCross): maybe add compound drawable? -->
+        <Button
+            android:id="@+id/action_safe_way"
+            style="@style/ToolbarMenuItem"
+            android:text="@string/toolbar_menu_safe_way"/>
+
+        <Button
+            android:id="@+id/action_settings"
+            style="@style/ToolbarMenuItem"
+            android:text="@string/toolbar_menu_settings"/>
+    </LinearLayout>
+</RelativeLayout>
+
 

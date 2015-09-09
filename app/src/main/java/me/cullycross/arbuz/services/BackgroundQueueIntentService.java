@@ -13,6 +13,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import me.cullycross.arbuz.content.CrimeLocation;
+import me.cullycross.arbuz.events.DoneLoadEvent;
 import me.cullycross.arbuz.events.FetchedDataEvent;
 import me.cullycross.arbuz.utils.ParseHelper;
 
@@ -69,6 +70,11 @@ public class BackgroundQueueIntentService extends IntentService {
             @Override
             public void onLoadCrimes(List<CrimeLocation> crimes) {
                 EventBus.getDefault().post(new FetchedDataEvent(crimes));
+            }
+
+            @Override
+            public void onDoneLoad() {
+                EventBus.getDefault().post(new DoneLoadEvent());
             }
         });
     }

@@ -56,14 +56,6 @@ public class ParseHelper {
         return sCrimes;
     }
 
-    /*public List<WeightedLatLng> convertCrimeToWeighted(Set<CrimeLocation> crimes) {
-        List<WeightedLatLng> weightedLatLngs = new ArrayList<>(crimes.size());
-        for(CrimeLocation crime: crimes) {
-            weightedLatLngs.add(crime.getWeightedLatLng());
-        }
-        return weightedLatLngs;
-    }*/
-
     public void downloadAll(OnLoadCrimesListener listener) {
         ParseQuery<CrimeLocation> query = ParseQuery.getQuery(CrimeLocation.class);
         query.setLimit(FETCH_OBJECTS_LIMIT);
@@ -111,7 +103,7 @@ public class ParseHelper {
 
         @Override
         public void done(List<CrimeLocation> locations, ParseException e) {
-            if (e == null) {
+            if (e == null && locations.size() != 0) {
 
                 locations.removeAll(sCrimes);
 
@@ -147,6 +139,9 @@ public class ParseHelper {
             } else {
                 // reset everything
 
+                if (mListener != null) {
+                    mListener.onDoneLoad();
+                }
                 mNear = null;
                 mListener = null;
                 mDistance = 0;
@@ -157,5 +152,6 @@ public class ParseHelper {
 
     public interface OnLoadCrimesListener {
         void onLoadCrimes(List<CrimeLocation> crimes);
+        void onDoneLoad();
     }
 }

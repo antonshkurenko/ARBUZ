@@ -19,6 +19,7 @@
         <item name="android:layout_weight">1</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:textColor">#fff</item>
     </style>
 
 </resources>
