@@ -23,8 +23,11 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.SphericalUtil;
 import com.google.maps.android.clustering.ClusterManager;
+import com.parse.CountCallback;
 import com.parse.ParseAnalytics;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import java.util.List;
 
@@ -39,6 +42,7 @@ import me.cullycross.arbuz.content.CrimeLocation;
 import me.cullycross.arbuz.events.DoneLoadEvent;
 import me.cullycross.arbuz.events.FetchedDataEvent;
 import me.cullycross.arbuz.events.LocationFoundEvent;
+import me.cullycross.arbuz.events.SaveToLocalStoreEvent;
 import me.cullycross.arbuz.fragments.ArbuzMapFragment;
 import me.cullycross.arbuz.fragments.DirectionsDialogFragment;
 import me.cullycross.arbuz.services.BackgroundQueueIntentService;
@@ -62,8 +66,8 @@ public class MapActivity extends AppCompatActivity
     ToggleButton mToggleButtonLocation;
     @Bind(R.id.action_safe_way)
     Button mActionSafeWay;
-    @Bind(R.id.action_settings)
-    Button mActionSettings;
+    @Bind(R.id.action_download)
+    Button mActionDownload;
     @Bind(R.id.progress_bar)
     ProgressBar mProgressBar;
 
@@ -96,7 +100,8 @@ public class MapActivity extends AppCompatActivity
                                     cameraPosition.target,
                                     mMap.getProjection()
                                             .getVisibleRegion()
-                                            .latLngBounds.northeast)
+                                            .latLngBounds.northeast),
+                            true
                     );
         }
     };
@@ -120,6 +125,18 @@ public class MapActivity extends AppCompatActivity
     public void onEventMainThread(FetchedDataEvent event) {
         mClusterManager.addItems(event.getLocations());
         mClusterManager.cluster();
+    }
+
+    /**
+     * Method for updating progress bar while saving data from the background queue
+     * to local storage
+     *
+     * @param event contains count of saved data
+     */
+    public void onEventMainThread(SaveToLocalStoreEvent event) {
+
+        final int progress = mProgressBar.getProgress() + event.getCount();
+        mProgressBar.setProgress(progress);
     }
 
     /**
@@ -147,9 +164,7 @@ public class MapActivity extends AppCompatActivity
     @Override
     public void onCameraChanged(CameraPosition cameraPosition) {
 
-        mProgressBar.setIndeterminate(true);
-        mProgressBar.setVisibility(View.VISIBLE);
-        mProgressBar.bringToFront();
+        startProgress();
 
         mHandler.removeMessages(CAMERA_POSITION_CHANGED);
         mHandler.sendMessageDelayed(
@@ -179,10 +194,24 @@ public class MapActivity extends AppCompatActivity
         mMap.setOnMarkerClickListener(mClusterManager);
     }
 
-    @OnClick(R.id.action_settings)
-    public void openSettings() {
-        Intent openSettingsIntent = new Intent(this, SettingsActivity.class);
-        startActivity(openSettingsIntent);
+    @OnClick(R.id.action_download)
+    public void downloadCrimes() {
+        startProgress();
+
+        ParseQuery<CrimeLocation> query = ParseQuery.getQuery(CrimeLocation.class);
+        query.countInBackground(new CountCallback() {
+            public void done(int count, ParseException e) {
+                if (e == null) {
+                    mProgressBar.setIndeterminate(false);
+                    mProgressBar.setMax(count);
+                    BackgroundQueueIntentService
+                            .startActionFetch(MapActivity.this, false);
+                } else {
+                    // ignored
+                }
+            }
+        });
+
     }
 
     @Override
@@ -252,5 +281,11 @@ public class MapActivity extends AppCompatActivity
     private void initParse() {
         ParseAnalytics.trackAppOpenedInBackground(getIntent());
         ParseObject.registerSubclass(CrimeLocation.class);
+    }
+
+    private void startProgress() {
+        mProgressBar.setIndeterminate(true);
+        mProgressBar.setVisibility(View.VISIBLE);
+        mProgressBar.bringToFront();
     }
 }

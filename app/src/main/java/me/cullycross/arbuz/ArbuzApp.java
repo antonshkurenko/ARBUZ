@@ -20,6 +20,7 @@ public class ArbuzApp extends Application {
 
         LocationHelper.getInstance().init(this);
         ParseHelper.getInstance().init(this);
+        Parse.enableLocalDatastore(this);
         Parse.initialize(this,
                 getResources().getString(R.string.parse_application_id),
                 getResources().getString(R.string.parse_client_key));

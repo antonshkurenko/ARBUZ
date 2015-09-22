@@ -6,4 +6,5 @@ package me.cullycross.arbuz.events;
  * For my shining stars!
  */
 public class DoneLoadEvent extends Event {
+
 }

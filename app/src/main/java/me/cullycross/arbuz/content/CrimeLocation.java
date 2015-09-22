@@ -2,7 +2,6 @@ package me.cullycross.arbuz.content;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
-import com.google.maps.android.heatmaps.WeightedLatLng;
 import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -13,7 +12,7 @@ import com.parse.ParseObject;
  * For my shining stars!
  */
 
-@ParseClassName("data_01_2013_part1") // ARRRRRRRRRR
+@ParseClassName("streets")
 public class CrimeLocation extends ParseObject implements ClusterItem {
 
     public static final String LOCATION = "location";
@@ -23,12 +22,12 @@ public class CrimeLocation extends ParseObject implements ClusterItem {
     public static final String YEAR = "year";
     public static final String TOTAL = "total";
     public static final String TOTAL_POINTS = "total_points";
-    public static final String BODILY_HARD_WITH_FATAL_CONS = "bodily_hard_with_fatal_cons";
+    public static final String BODILY_HARM_WITH_FATAL_CONS = "bodily_harm_with_fatal_cons";
     public static final String BRIGANDAGE = "brigandage";
     public static final String DRUGS = "drugs";
     public static final String EXTORTION = "extortion";
     public static final String FRAUD = "fraud";
-    public static final String HEAV_OSOBO_HEAV = "heav_osobo_heav";
+    public static final String HEAVY = "heavy";
     public static final String HOOLIGANISM = "hooliganism";
     public static final String INTENTIONAL_INJURY = "intentional_injury";
     public static final String LOOTING = "looting";
@@ -72,7 +71,6 @@ public class CrimeLocation extends ParseObject implements ClusterItem {
         return getString(STREET);
     }
 
-    //todo(CullyCross): ask about monthes
     public int getMonth() {
         return getInt(MONTH);
     }
@@ -90,7 +88,7 @@ public class CrimeLocation extends ParseObject implements ClusterItem {
     }
 
     public int getBodilyHarmWithFatalCons() {
-        return getInt(BODILY_HARD_WITH_FATAL_CONS);
+        return getInt(BODILY_HARM_WITH_FATAL_CONS);
     }
 
     public int getBrigandage() {
@@ -110,7 +108,7 @@ public class CrimeLocation extends ParseObject implements ClusterItem {
     }
 
     public int getHeavOsoboHeav() {
-        return getInt(HEAV_OSOBO_HEAV);
+        return getInt(HEAVY);
     }
 
     public int getHooliganism() {

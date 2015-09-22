@@ -224,7 +224,6 @@ public class LocationHelper
         // currently ignored
     }
 
-    // todo(CullyCross): test it with real device
     @Override
     public void onLocationChanged(Location location) {
 

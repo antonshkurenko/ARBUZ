@@ -2,7 +2,7 @@
 
     <!-- Base application theme. -->
     <style name="Arbuz" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+        <item name="colorAccent">@color/yellow</item>
     </style>
 
     <style name="Arbuz.Toolbar">

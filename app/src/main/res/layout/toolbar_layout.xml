@@ -31,9 +31,9 @@
             android:text="@string/toolbar_menu_safe_way"/>
 
         <Button
-            android:id="@+id/action_settings"
+            android:id="@+id/action_download"
             style="@style/ToolbarMenuItem"
-            android:text="@string/toolbar_menu_settings"/>
+            android:text="@string/toolbar_menu_download"/>
     </LinearLayout>
 </RelativeLayout>
 

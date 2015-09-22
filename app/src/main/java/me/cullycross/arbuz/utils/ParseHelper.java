@@ -8,7 +8,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,6 +29,7 @@ public class ParseHelper {
     public static final float NEAR_DISTANCE = 0.3f;
 
     private static final int FETCH_OBJECTS_LIMIT = 25;
+    private static final int SAVE_TO_STORE_OBJECTS_LIMIT = 100;
     private static final String TAG = ParseHelper.class.getName();
     private Context mContext;
 
@@ -56,30 +59,68 @@ public class ParseHelper {
         return sCrimes;
     }
 
-    public void downloadAll(OnLoadCrimesListener listener) {
+    public void downloadAllFromLocalStore(OnLoadCrimesListener listener) {
+        downloadAll(true, listener);
+    }
+
+    public void downloadNearFromLocalStore(ParseGeoPoint near, OnLoadCrimesListener listener) {
+        downloadNear(near, true, listener);
+    }
+
+    public void downloadNearFromLocalStore(ParseGeoPoint near,
+                                           double distance,
+                                           OnLoadCrimesListener listener) {
+        downloadNear(near, distance, true, listener);
+    }
+
+    public void downloadAllFromParse(OnLoadCrimesListener listener) {
+        downloadAll(false, listener);
+    }
+
+    public void downloadNearFromParse(ParseGeoPoint near, OnLoadCrimesListener listener) {
+        downloadNear(near, false, listener);
+    }
+
+    public void downloadNearFromParse(ParseGeoPoint near,
+                                      double distance,
+                                      OnLoadCrimesListener listener) {
+        downloadNear(near, distance, false, listener);
+    }
+
+    private void downloadAll(boolean localStore, OnLoadCrimesListener listener) {
         ParseQuery<CrimeLocation> query = ParseQuery.getQuery(CrimeLocation.class);
-        query.setLimit(FETCH_OBJECTS_LIMIT);
-        query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+
+        if (localStore) {
+            query.setLimit(FETCH_OBJECTS_LIMIT);
+        } else {
+            query.setLimit(SAVE_TO_STORE_OBJECTS_LIMIT);
+        }
 
         mFindCallback.mListener = listener;
+        mFindCallback.mLocalDatastore = localStore;
 
         query.findInBackground(mFindCallback);
     }
 
-    public void downloadNear(ParseGeoPoint near, OnLoadCrimesListener listener) {
-        downloadNear(near, 0, listener);
+    private void downloadNear(ParseGeoPoint near, boolean localStore, OnLoadCrimesListener listener) {
+        downloadNear(near, 0, localStore, listener);
     }
 
-    public void downloadNear(ParseGeoPoint near, double distance, OnLoadCrimesListener listener) {
+    private void downloadNear(ParseGeoPoint near, double distance, boolean localStore, OnLoadCrimesListener listener) {
         ParseQuery<CrimeLocation> query = ParseQuery.getQuery(CrimeLocation.class);
-        query.setLimit(FETCH_OBJECTS_LIMIT);
-        query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+
+        if (localStore) {
+            query.setLimit(FETCH_OBJECTS_LIMIT);
+        } else {
+            query.setLimit(SAVE_TO_STORE_OBJECTS_LIMIT);
+        }
 
         distance /= 1000;
 
         mFindCallback.mListener = listener;
         mFindCallback.mNear = near;
         mFindCallback.mDistance = distance;
+        mFindCallback.mLocalDatastore = localStore;
 
         if (distance != 0) {
             distance = NEAR_DISTANCE;
@@ -92,6 +133,10 @@ public class ParseHelper {
                     distance);
         }
 
+        if (localStore) {
+            query.fromLocalDatastore();
+        }
+
         query.findInBackground(mFindCallback);
     }
 
@@ -100,6 +145,7 @@ public class ParseHelper {
         ParseGeoPoint mNear;
         OnLoadCrimesListener mListener;
         double mDistance;
+        boolean mLocalDatastore = false;
 
         @Override
         public void done(List<CrimeLocation> locations, ParseException e) {
@@ -116,7 +162,11 @@ public class ParseHelper {
                             " locations.size() = " + locations.size() + " sum = " + (sCrimes.size() + locations.size()));
                     sCrimes.addAll(locations);
 
-                    mSkip += FETCH_OBJECTS_LIMIT;
+                    if (mLocalDatastore) {
+                        mSkip += FETCH_OBJECTS_LIMIT;
+                    } else {
+                        mSkip += SAVE_TO_STORE_OBJECTS_LIMIT;
+                    }
 
                     ParseQuery<CrimeLocation> query = ParseQuery.getQuery(CrimeLocation.class);
 
@@ -131,9 +181,19 @@ public class ParseHelper {
                                 mDistance);
                     }
 
-                    query.setLimit(FETCH_OBJECTS_LIMIT)
-                            .setSkip(mSkip)
-                            .setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK)
+                    if (mLocalDatastore) {
+                        query.fromLocalDatastore();
+                    } else {
+                        ParseObject.pinAllInBackground(locations);
+                    }
+
+                    if (mLocalDatastore) {
+                        query.setLimit(FETCH_OBJECTS_LIMIT);
+                    } else {
+                        query.setLimit(SAVE_TO_STORE_OBJECTS_LIMIT);
+                    }
+
+                    query.setSkip(mSkip)
                             .findInBackground(this);
                 }
             } else {
@@ -146,12 +206,14 @@ public class ParseHelper {
                 mListener = null;
                 mDistance = 0;
                 mSkip = 0;
+                mLocalDatastore = false;
             }
         }
     }
 
     public interface OnLoadCrimesListener {
         void onLoadCrimes(List<CrimeLocation> crimes);
+
         void onDoneLoad();
     }
 }

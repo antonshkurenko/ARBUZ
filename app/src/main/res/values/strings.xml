@@ -6,6 +6,7 @@
     <!-- Toolbar strings -->
     <string name="toolbar_menu_safe_way">Safe way</string>
     <string name="toolbar_menu_settings">Settings</string>
+    <string name="toolbar_menu_download">Download map</string>
 
     <!-- Map controls -->
     <string name="map_controls_heatmap">Heatmap</string>
